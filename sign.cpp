@@ -24,8 +24,8 @@ void sign::on_signin_clicked()
     string u = qarg1.toUtf8().constData();
     QString qarg2=ui->password->text();
     string p = qarg2.toUtf8().constData();
-    //bool x=cpeer.AnnouncePresence(u,p);
-    bool x=true;
+    bool x=cpeer.AnnouncePresence(u,p);
+    //bool x=true;
     if(!x)
         QMessageBox::warning(this,"Login", "Username or password is not correct");
     else{
