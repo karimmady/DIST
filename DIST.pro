@@ -32,7 +32,8 @@ SOURCES += \
     Peer.cpp \
     steg.cpp \
     UDPSocket.cpp \
-    ServiceDirectory.cpp
+    ServiceDirectory.cpp \
+    sign.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -43,10 +44,14 @@ HEADERS += \
     steg.h \
     UDPClientSocket.h \
     UDPServerSocket.h \
-    UDPSocket.h
+    UDPSocket.h \
+    sign.h
 
 FORMS += \
-        mainwindow.ui
+        mainwindow.ui \
+    sign.ui
+
+CONFIG += console
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

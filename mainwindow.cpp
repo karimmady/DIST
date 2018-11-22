@@ -1,9 +1,18 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include<QString>
-#include<string>
-#include<iostream>
-#include "ServiceDirectory.h"
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string.h>
+#include "Peer.h"
+#include "Message.h"
+#include "steg.h"
+#include "base64.h"
+#include <unistd.h>
+#include <thread>
+#include<QMessageBox>
+#include"sign.h"
 using namespace std;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -21,24 +30,29 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_connect_clicked()
 {
-    QString qarg1=ui->port->text();
+    QString qarg1=ui->sport->text();
     string arg1 = qarg1.toUtf8().constData();
-    QString qarg2=ui->myip->text();
+    QString qarg2=ui->myport->text();
     string arg2 = qarg2.toUtf8().constData();
-    QString qarg3=ui->serversip->text();
+    QString qarg3=ui->myip->text();
     string arg3 = qarg3.toUtf8().constData();
-    char * po;
-    char * _myAddr=new char[arg2.length() + 1];
-    strcpy(_myAddr, arg2.c_str());
-    char* _peerAddr=new char[arg3.length() + 1];
-    strcpy(_peerAddr, arg3.c_str());
-    char* c=new char[arg1.length() + 1];
-    strcpy(c, arg1.c_str());
-    int myip=inet_addr(_myAddr);
-    int port=strtol(c,&po,10);
-    ServiceDirectory SD(ntohl(myip),port);
-    SD.Listen();
-    SD.Listen();
-    SD.Listen();
-    //mesh shayef el classes
+    QString qarg4=ui->serversip->text();
+    string arg4 = qarg4.toUtf8().constData();
+
+    char * server_po;
+    char * client_po;
+    bool x;
+    int myip=inet_addr(arg3.c_str());
+    int directoryserviceip=inet_addr(arg4.c_str());
+    int clientport=strtol(arg2.c_str(),&server_po,10);
+    int serverport=strtol(arg1.c_str(),&client_po,10);
+    Peer cspeer(ntohl(myip),ntohl(directoryserviceip),serverport,clientport,x);
+    if(!x)
+         QMessageBox::warning(this,"BIND", "bind failed");
+    else
+    {
+        hide();
+        sign *w=new sign(cspeer,this);
+        w->show();
+    }
 }

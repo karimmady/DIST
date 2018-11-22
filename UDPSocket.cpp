@@ -159,5 +159,5 @@ char * UDPSocket::readFromSocketWithTimeout(int timeoutSeconds, bool& flag)
 
 UDPSocket::~UDPSocket()
 {
-	close(sock);
+    //close(sock);
 }

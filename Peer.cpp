@@ -23,6 +23,21 @@ vector<string> Peer::read_directory(const string& name)
     return v;
 }
 
+Peer::Peer(Peer &x)
+{
+    UDPCSocket=x.UDPCSocket;
+    UDPSSocket=x.UDPSSocket;
+    UDPSDSocket=x.UDPSDSocket;
+    myinfo=x.myinfo;
+    onlineusers=x.onlineusers;
+    onlineuser_adds=x.onlineuser_adds;
+    ImagesEachUser=x.ImagesEachUser;
+    SentPictures=x.SentPictures;
+    ReceivedPictures=x.ReceivedPictures;
+    username=x.username;
+    password=x.password;
+}
+
 vector<string> Peer::fragment(string s)
 {
   vector<string> v;
@@ -53,6 +68,7 @@ Peer::Peer(int _myAddr,int serverAddr, int _port,int port2,bool &binded)
   myinfo.sin_family=AF_INET;
   myinfo.sin_addr.s_addr=htonl(_myAddr);
   myinfo.sin_port=htons(_port);
+  binded=true;
 
   // cout << htonl(_myAddr) << " " << htons(_port) << endl;
 }

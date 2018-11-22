@@ -54,10 +54,10 @@
      </font>
     </property>
     <property name="text">
-     <string>Port</string>
+     <string> My Port</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="port">
+   <widget class="QLineEdit" name="myport">
     <property name="geometry">
      <rect>
       <x>80</x>
@@ -71,7 +71,7 @@
     <property name="geometry">
      <rect>
       <x>80</x>
-      <y>190</y>
+      <y>230</y>
       <width>131</width>
       <height>31</height>
      </rect>
@@ -89,7 +89,7 @@
     <property name="geometry">
      <rect>
       <x>80</x>
-      <y>230</y>
+      <y>270</y>
       <width>221</width>
       <height>21</height>
      </rect>
@@ -147,6 +147,34 @@
     </property>
     <property name="text">
      <string>Connect</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="sport">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>190</y>
+      <width>221</width>
+      <height>21</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>150</y>
+      <width>131</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>16</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Server's Port</string>
     </property>
    </widget>
   </widget>
