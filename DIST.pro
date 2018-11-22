@@ -33,7 +33,8 @@ SOURCES += \
     steg.cpp \
     UDPSocket.cpp \
     ServiceDirectory.cpp \
-    sign.cpp
+    sign.cpp \
+    home.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -45,11 +46,13 @@ HEADERS += \
     UDPClientSocket.h \
     UDPServerSocket.h \
     UDPSocket.h \
-    sign.h
+    sign.h \
+    home.h
 
 FORMS += \
         mainwindow.ui \
-    sign.ui
+    sign.ui \
+    home.ui
 
 CONFIG += console
 
