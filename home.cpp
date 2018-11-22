@@ -3,6 +3,9 @@
 #include<string>
 #include<QString>
 #include<QMessageBox>
+#include<map>
+#include"view.h"
+using namespace std;
 home::home(Peer &cspeer,QWidget *parent) :
     QDialog(parent),
     ui(new Ui::home),
@@ -13,6 +16,9 @@ home::home(Peer &cspeer,QWidget *parent) :
     ui->opcodes->addItem(ops);
     QPixmap pix("/home/karim/Desktop/DIST/c.jpg");
     ui->pic->setPixmap(pix.scaled(511,211));
+    map <string,struct sockaddr_in> onlineuser_adds=cpeer.CheckOnlineFirst();
+    for(auto it:onlineuser_adds)
+        ui->users->addItem(QString::fromStdString(it.first+"\n"));
 
 }
 
@@ -36,14 +42,14 @@ void home::on_submit_clicked()
     try {
         z=stoi(u);
     } catch (exception &e) {
-        QMessageBox::warning(this,"Login", "Please enter op code");
+        QMessageBox::warning(this,"Error", "Please enter op code");
     }
 
     if(z == 0)							//Inquire
     {
-         cpeer.CheckOnlineFirst();
+
          if(uname=="")
-             QMessageBox::warning(this,"Login", "Please enter username");
+             QMessageBox::warning(this,"Error", "Please enter username");
          else
              cpeer.Inquire(uname);
     }
@@ -51,27 +57,53 @@ void home::on_submit_clicked()
     else if(z == 1)       //Request Picture
     {
         if(uname=="")
-           QMessageBox::warning(this,"Login", "Please enter username");
+           QMessageBox::warning(this,"Error", "Please enter username");
         else if(filename=="")
-           QMessageBox::warning(this,"Login", "Please enter File name");
+           QMessageBox::warning(this,"Error", "Please enter File name");
         else if(views=="")
-            QMessageBox::warning(this,"Login", "Please enter views");
+            QMessageBox::warning(this,"Error", "Please enter views");
         else
             cpeer.req(uname,filename,views);
     }
-
+    else if(z == 2) //Change Count
+    {
+        map< pair <string,string>, string > ReceivedPictures;
+        ReceivedPictures=cpeer.CheckReceievedPictures();
+        map< pair <string,string>, int > SentPictures;
+        SentPictures=cpeer.CheckSentPictures();
+        view *v=new view(ReceivedPictures,SentPictures,this);
+        v->show();
+        if(uname=="")
+           QMessageBox::warning(this,"Error", "Please enter username");
+        else if(filename=="")
+           QMessageBox::warning(this,"Error", "Please enter File name");
+        else if(views=="")
+            QMessageBox::warning(this,"Error", "Please enter views");
+        else
+            cpeer.ControlAccess(uname,filename,views);
+    }
     else if(z == 3)  //View Count
-            {
-                cout << "Received Pictures : " << endl;
-                cpeer.CheckReceievedPictures();
-                cout << "Sent Pictures : " << endl;
-                cpeer.CheckSentPictures();
-                cout << "*************************" << endl;
-                cout << "Please enter file name " << endl;
-                cin >> filename;
-                cout << "Please enter Username " << endl;
-                cin >> uname;
-                cpeer.ViewCount(uname,filename);
-            }
+     {
+        map< pair <string,string>, string > ReceivedPictures;
+        ReceivedPictures=cpeer.CheckReceievedPictures();
+        map< pair <string,string>, int > SentPictures;
+        SentPictures=cpeer.CheckSentPictures();
+        view *v=new view(ReceivedPictures,SentPictures,this);
+        v->show();
+        if(uname=="")
+           QMessageBox::warning(this,"Error", "Please enter username");
+        else if(filename=="")
+           QMessageBox::warning(this,"Error", "Please enter File name");
+        else
+           cpeer.ViewCount(uname,filename);
+     }
 
+}
+
+void home::on_reload_clicked()
+{
+    ui->users->clear();
+     map <string,struct sockaddr_in> onlineuser_adds=cpeer.CheckOnlineFirst();
+     for(auto it:onlineuser_adds)
+         ui->users->addItem(QString::fromStdString(it.first+"\n"));
 }

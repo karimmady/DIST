@@ -225,6 +225,19 @@
     <string>TextLabel</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="reload">
+   <property name="geometry">
+    <rect>
+     <x>950</x>
+     <y>60</y>
+     <width>89</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Reload</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>

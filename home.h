@@ -18,6 +18,8 @@ public:
 private slots:
     void on_submit_clicked();
 
+    void on_reload_clicked();
+
 private:
     Ui::home *ui;
     Peer cpeer;

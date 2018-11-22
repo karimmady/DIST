@@ -34,7 +34,8 @@ SOURCES += \
     UDPSocket.cpp \
     ServiceDirectory.cpp \
     sign.cpp \
-    home.cpp
+    home.cpp \
+    view.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -47,12 +48,14 @@ HEADERS += \
     UDPServerSocket.h \
     UDPSocket.h \
     sign.h \
-    home.h
+    home.h \
+    view.h
 
 FORMS += \
         mainwindow.ui \
     sign.ui \
-    home.ui
+    home.ui \
+    view.ui
 
 CONFIG += console
 

@@ -33,12 +33,12 @@ class Peer
 		void UpdateCount (string msg, struct sockaddr_in client);
 		vector<string> fragment(string);
 		bool AnnouncePresence(string,string);
-		void CheckReceievedPictures();
-		void CheckSentPictures();
+        map< pair <string,string>, string > CheckReceievedPictures();
+        map< pair <string,string>, int > CheckSentPictures();
 		bool Register(string,string);
 		void ViewPicture(string filename);
 		struct sockaddr_in ReqAdd(string);
-		void CheckOnlineFirst();
+        map <string,struct sockaddr_in> CheckOnlineFirst();
 		void Inquire(string);
 		void TerminateThread();
 		bool SendPicture(string recvs,struct sockaddr_in client);

@@ -248,22 +248,18 @@ int Peer::ViewCount(string requser,string filename)
   cout<< "User is not online " << endl;
 }
 
-void Peer::CheckOnlineFirst()
+map <string,struct sockaddr_in> Peer::CheckOnlineFirst()
 {
-  cout << "Current Online Users : " << endl;
-  for(auto it:onlineuser_adds)
-    cout << it.first << endl;
+ return onlineuser_adds;
 }
-void Peer::CheckSentPictures()
+map< pair <string,string>, int > Peer::CheckSentPictures()
 {
-  for(auto it:SentPictures)
-    cout << "Picture : " << it.first.second << " ,To User : "<< it.first.first << endl;
+  return SentPictures;
 }
 
-void Peer::CheckReceievedPictures()
+map< pair <string,string>, string > Peer::CheckReceievedPictures()
 {
-  for(auto it:ReceivedPictures)
-    cout << "Picture : " << it.first.second << " ,From User : "<< it.first.first << endl;
+    return ReceivedPictures;
 }
 void Peer::ViewPicture(string filename)
 {
