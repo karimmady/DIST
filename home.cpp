@@ -120,8 +120,20 @@ void home::on_submit_clicked()
            QMessageBox::warning(this,"Error", "Please enter username");
         else if(filename=="")
            QMessageBox::warning(this,"Error", "Please enter File name");
-        else
-           cpeer.ViewCount(uname,filename);
+        else{
+            int views;
+           views=cpeer.ViewCount(uname,filename);
+           if(views==0)
+               QMessageBox::warning(this,"Error","Error");
+           else if(views==-1)
+               QMessageBox::warning(this,"Error", "User is not online");
+           else
+           {
+               string s=to_string(views);
+               QMessageBox::information(this, "Views",QString::fromStdString("Views = "+s));
+           }
+
+        }
      }
 
 }
@@ -129,6 +141,9 @@ void home::on_submit_clicked()
 void home::on_reload_clicked()
 {
     ui->users->clear();
+    ui->sent->clear();
+    ui->rec->clear();
+    ui->imagesofuser->clear();
      map <string,struct sockaddr_in> onlineuser_adds=cpeer.CheckOnlineFirst();
      for(auto it:onlineuser_adds)
          ui->users->addItem(QString::fromStdString(it.first+"\n"));
