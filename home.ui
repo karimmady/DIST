@@ -19,7 +19,7 @@
      <x>30</x>
      <y>120</y>
      <width>221</width>
-     <height>541</height>
+     <height>211</height>
     </rect>
    </property>
   </widget>
@@ -29,7 +29,7 @@
      <x>880</x>
      <y>120</y>
      <width>221</width>
-     <height>541</height>
+     <height>211</height>
     </rect>
    </property>
   </widget>
@@ -236,6 +236,65 @@
    </property>
    <property name="text">
     <string>Reload</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="nameofowner">
+   <property name="geometry">
+    <rect>
+     <x>130</x>
+     <y>90</y>
+     <width>71</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QListWidget" name="sent">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>410</y>
+     <width>221</width>
+     <height>211</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_9">
+   <property name="geometry">
+    <rect>
+     <x>90</x>
+     <y>380</y>
+     <width>101</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Sent Pictures</string>
+   </property>
+  </widget>
+  <widget class="QListWidget" name="rec">
+   <property name="geometry">
+    <rect>
+     <x>880</x>
+     <y>400</y>
+     <width>221</width>
+     <height>211</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_10">
+   <property name="geometry">
+    <rect>
+     <x>930</x>
+     <y>370</y>
+     <width>141</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Receieved Pictures</string>
    </property>
   </widget>
  </widget>

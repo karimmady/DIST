@@ -3,6 +3,8 @@
 
 #include <QDialog>
 #include"Peer.h"
+#include<thread>
+#include<map>
 namespace Ui {
 class home;
 }
@@ -23,6 +25,8 @@ private slots:
 private:
     Ui::home *ui;
     Peer cpeer;
+    map< pair <string,string>, string > ReceivedPictures;
+    map< pair <string,string>, int > SentPictures;
 };
 
 #endif // HOME_H

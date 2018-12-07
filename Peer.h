@@ -39,7 +39,7 @@ class Peer
 		void ViewPicture(string filename);
 		struct sockaddr_in ReqAdd(string);
         map <string,struct sockaddr_in> CheckOnlineFirst();
-		void Inquire(string);
+        vector<string> Inquire(string);
 		void TerminateThread();
 		bool SendPicture(string recvs,struct sockaddr_in client);
 		void InquiryReply(string msg,struct sockaddr_in client);

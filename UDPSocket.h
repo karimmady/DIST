@@ -12,8 +12,9 @@ using namespace std;
 
 class UDPSocket
 {
-	protected:
+    public:
 		int sock;
+    private:
 		struct sockaddr_in myAddr;
 		struct sockaddr_in peerAddr;
 		char * myAddress;

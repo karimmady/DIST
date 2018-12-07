@@ -25,9 +25,16 @@ vector<string> Peer::read_directory(const string& name)
 
 Peer::Peer(Peer &x)
 {
+    //cout << "Copy Constructor\n";
+    //cout << "Client Sock " << x.UDPCSocket->sock;
     UDPCSocket=x.UDPCSocket;
+    //cout << " " <<UDPCSocket->sock << endl;
+    //cout << "Server Sock " << x.UDPSSocket->sock;
     UDPSSocket=x.UDPSSocket;
+    //cout << " "<< UDPSSocket->sock << endl;
+    //cout << "SD Sock " << x.UDPSDSocket->sock;
     UDPSDSocket=x.UDPSDSocket;
+    //cout << " " << UDPSDSocket->sock;
     myinfo=x.myinfo;
     onlineusers=x.onlineusers;
     onlineuser_adds=x.onlineuser_adds;
@@ -58,25 +65,22 @@ vector<string> Peer::fragment(string s)
 
 Peer::Peer(int _myAddr,int serverAddr, int _port,int port2,bool &binded)
 {
-	UDPCSocket=new UDPClientSocket;
+    UDPCSocket=new UDPClientSocket;
 	UDPSSocket=new UDPServerSocket;
   UDPSDSocket=new UDPClientSocket;
-	UDPCSocket->initializeClient(_myAddr,serverAddr, port2);
   int x;
+
+    UDPCSocket->initializeClient(_myAddr,serverAddr, port2);
   UDPSDSocket->initializeClient(_myAddr,serverAddr,_port,x);
 	binded=UDPSSocket->initializeServer(_myAddr,_port);
   myinfo.sin_family=AF_INET;
   myinfo.sin_addr.s_addr=htonl(_myAddr);
   myinfo.sin_port=htons(_port);
-  binded=true;
-
   // cout << htonl(_myAddr) << " " << htons(_port) << endl;
 }
 
 bool is_number(string s)
 {
-    cout << s << endl;
-    cout << s.length() << endl;
     int i=0;
     while(i<s.length())
     {
@@ -100,7 +104,6 @@ bool Peer::Register(string username,string password)
     string flag=UDPSDSocket->readFromSocketWithTimeout(10);
     Message reg((char *)(flag.c_str()));
     string flag_demarsh=reg.demarshal();
-    cout << flag_demarsh << endl;
 
     flag_demarsh.erase(0,flag_demarsh.find(' ')+1);
     flag_demarsh.erase(0,flag_demarsh.find(' ')+1);
@@ -145,7 +148,6 @@ bool Peer::AnnouncePresence(string user,string passw)
     username = user;
     password=passw;
     string account = username + " " + password + " " +to_string(myinfo.sin_port);
-    cout << account << endl;
     Message announcement(1,(char *)(account.c_str()),account.length(),rpcid,Up);
     string announ=announcement.marshal(2+rpc.length()+1+account.length());
     int amountsent=UDPSDSocket->writeToSocket(announ,sendsize);
@@ -153,8 +155,6 @@ bool Peer::AnnouncePresence(string user,string passw)
     string flag=UDPSDSocket->readFromSocketWithTimeout(10);
     Message auth((char *)(flag.c_str()));
     string flag_demarsh=auth.demarshal();
-    cout << flag_demarsh << endl;
-
 
     flag_demarsh.erase(0,flag_demarsh.find(' ')+1);
     flag_demarsh.erase(0,flag_demarsh.find(' ')+1);
@@ -191,11 +191,13 @@ bool Peer::AnnouncePresence(string user,string passw)
 }
 
 //Inquiring about Pictures at certain user
-void Peer::Inquire(string requser)
+vector<string> Peer::Inquire(string requser)
 {
+  vector<string> v;
   onlineuser_adds[requser] = ReqAdd(requser);
   if(onlineuser_adds.find(requser) != onlineuser_adds.end())
   {
+    struct sockaddr_in x=onlineuser_adds[requser];
     UDPCSocket->changepeerip(onlineuser_adds[requser]);
     string s = username;
   	Message inq(0,(char *)(s.c_str()),s.length(),0,Inquiry);
@@ -203,10 +205,11 @@ void Peer::Inquire(string requser)
   	int amountrep = UDPCSocket->writeToSocket(marshs,sendsize);
   	string inquired;
   	cout << "Start of Inquiry\n";
+    cout << "el inquire fein yabn el ab7a\n";
     //Watch for packet drop /*******************************************
-    vector<string> v;
+
     do {
-  		inquired=UDPCSocket->readFromSocketWithTimeout(90);
+        inquired=UDPCSocket->readFromSocketWithTimeout(90);
   		Message receivedinq((char*)(inquired.c_str()));
   		inquired=receivedinq.demarshal();
       if(inquired != "eof")
@@ -219,7 +222,7 @@ void Peer::Inquire(string requser)
     UDPCSocket->changepeerip(onlineuser_adds[requser]);
   	cout << "End of Inquiry\n";
   }
-
+return v;
 }
 
 int Peer::ViewCount(string requser,string filename)
@@ -571,6 +574,7 @@ void Peer::rec()
 
 Peer::~Peer()
 {
-	delete UDPCSocket;
-	delete UDPSSocket;
+    UDPSDSocket=NULL;
+    UDPSSocket=NULL;
+    UDPCSocket=NULL;
 }

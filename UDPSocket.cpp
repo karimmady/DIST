@@ -5,6 +5,8 @@ UDPSocket::UDPSocket()
 {
 	if((sock=socket(AF_INET,SOCK_DGRAM,0))<0)
 		cerr << "Socket Creation Failed\n";
+    cout << sock << endl;
+
 }
 
 bool UDPSocket::initializeServer(int _myAddr, int _myPort)
@@ -67,17 +69,21 @@ bool UDPSocket::initializeClient(int _myAddr, int _peerAddr, int _Port)
 
 void UDPSocket::changepeerip(struct sockaddr_in peerip)
 {
-	peerAddr=peerip;
+    peerAddr.sin_family=peerip.sin_family;
+    peerAddr.sin_addr.s_addr=peerip.sin_addr.s_addr;
+    peerAddr.sin_port=peerip.sin_port;
 }
 
 int UDPSocket::writeToSocket(string buff, int maxBytes)
 {
-	int amount =-1;
-	if ((amount = sendto(sock,buff.c_str(),buff.length(),MSG_CONFIRM,(sockaddr *) &peerAddr, sizeof(peerAddr))) <= 0)
+    int amount =-1;
+    int x= 1;
+    if ((amount = sendto(sock,buff.c_str(),buff.length(),MSG_CONFIRM,(sockaddr *) &peerAddr, sizeof(peerAddr))) <= 0)
 	{
 		cerr << "Sending Failed\n";
-		return amount;
+        return amount;
 	}
+    cout << "Amount: " << amount << endl;
 	return amount;
 }
 

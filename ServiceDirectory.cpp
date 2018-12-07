@@ -11,7 +11,7 @@ ServiceDirectory::ServiceDirectory(int myaddr,int myport)
 	myAdd=myaddr;
 	myPort=myport;
 	UDPSSocket->initializeServer(myaddr,myport);
-	int x;
+    int x;
 	UDPCSocket->initializeClient(myaddr,0,myport,x);
 	string ln;
 	string username,password;
