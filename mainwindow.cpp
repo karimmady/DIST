@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    QPixmap pix("/home/karim/Desktop/DIST/b.jpg");
+    QPixmap pix("./b.jpg");
     ui->pic->setPixmap(pix.scaled(361,281));
 }
 
