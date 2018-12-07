@@ -248,8 +248,44 @@ int Peer::ViewCount(string requser,string filename)
       return 0;
   }
   else
-  cout<< "User is not online " << endl;
+    {
+      cout<< "User is not online " << endl;
+      return -1;
+    }
 }
+
+void Peer::refresh()
+{
+  string x=username;
+  int op=6;
+  int rpc=0;
+  Message m(op, (char *)(x.c_str()),x.length(),0,Up);
+  string marshalled=m.marshal(4+x.length());
+  int z=UDPSDSocket->writeToSocket(marshalled,sendsize);
+  string user;
+  while(true)
+  {
+    string mess=UDPSDSocket->readFromSocketWithTimeout(100);
+    Message m((char *)(mess.c_str()));
+    mess=m.demarshal();
+    if(mess=="end")
+      break;
+    int ip=mess.find(' ');
+    mess.erase(0,mess.find(' ')+1);
+    int port=mess.find(' ');
+    mess.erase(0,mess.find(' ')+1);
+    user=mess;
+    onlineuser_adds.clear();
+    onlineusers.clear();
+    struct sockaddr_in useradd;
+    useradd.sin_family=AF_INET;
+    useradd.sin_port=port;
+    useradd.sin_addr.s_addr=ip;
+    onlineusers.push_back(user);
+    onlineuser_adds[user]=useradd;
+  }
+}
+
 
 map <string,struct sockaddr_in> Peer::CheckOnlineFirst()
 {
@@ -569,6 +605,14 @@ void Peer::rec()
         cout << recvs << endl;
         ReturnNumOfViews(recvs,client);
     }
+    else if(opcode==6)
+    {
+        string ok="ok";
+        Message m((char*)(ok.c_str()));
+        string x=m.marshal(ok.length());
+        UDPSDSocket->writeToSocket(x,sendsize);
+    }
+
 	}
 }
 

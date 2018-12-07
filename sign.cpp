@@ -9,7 +9,7 @@ sign::sign(Peer &cspeer,QWidget *parent) :
     cpeer(cspeer)
 {
     ui->setupUi(this);
-    QPixmap pix("/home/karim/Desktop/DIST/a.jpg");
+    QPixmap pix("./a.jpg");
     ui->pic->setPixmap(pix.scaled(361,211));
 }
 

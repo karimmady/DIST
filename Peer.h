@@ -27,6 +27,7 @@ class Peer
     public:
 		Peer(int _myAddr,int _peerAddr, int _port,int port2,bool& binded);
         Peer(Peer &);
+        void refresh();
 		vector<string> read_directory(const string& name);
 		int ViewCount(string requser,string filename);
 		void ReturnNumOfViews(string msg,struct sockaddr_in client);

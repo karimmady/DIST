@@ -141,6 +141,30 @@ void ServiceDirectory::Listen()
 			string rep_marsh=rep.marshal(2+2+ip.length());
 			int amountsent=UDPSSocket->writeToSocket(rep_marsh,sendsize);
 		}
+        else if(opi==6)
+                {
+                    string user=rec;
+                    string ping="ping";
+                    for(auto it : user_addresses)
+                    {
+                        if(user!=it.first)
+                        {
+                            Message m(6,(char *)(ping.c_str()),ping.length(),0,Up);
+                            string l=m.marshal(4+ping.length());
+                            UDPSSocket->changepeerip(it.second);
+                            int amountsent=UDPSSocket->writeToSocket(l,sendsize);
+                            bool x;
+                            string s=UDPSSocket->readFromSocketWithTimeout(100,x);
+                            Message mm((char *)(s.c_str()));
+                            string reply=mm.demarshal();
+                            if(reply!="ok")
+                            {
+                                users.erase(it.first);
+                            }
+                        }
+                    }
+                }
+
 	}
 }
 
