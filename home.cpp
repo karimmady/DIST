@@ -7,6 +7,8 @@
 #include<vector>
 #include <thread>
 #include"view.h"
+#include"steg.h"
+#include<stdio.h>
 using namespace std;
 
 void call_server(Peer &server)
@@ -23,7 +25,7 @@ home::home(Peer &cspeer,QWidget *parent) :
     server.detach();
 
     ui->setupUi(this);
-    QString ops="0 - Inquire About Pictures at User.\n1 - Request Picture from User.\n2 - Change view count at certain user.\n3 - View current counter at certain user.\n4 - View Picture.\n5 - Terminate Program. \n";
+    QString ops="0 - Inquire About Pictures at User.\n1 - Request Picture from User.\n2 - Change view count at certain user.\n3 - View current counter at certain user.\n4 - View Picture.\n";
     ui->opcodes->addItem(ops);
     cout << "Home\n";
     QPixmap pix("/home/karim/Desktop/DIST/c.jpg");
@@ -135,6 +137,35 @@ void home::on_submit_clicked()
 
         }
      }
+    else if(z==4)
+    {
+        if(uname=="")
+           QMessageBox::warning(this,"Error", "Please enter username");
+        else if(filename=="")
+           QMessageBox::warning(this,"Error", "Please enter File name");
+        else
+        {
+            steg stegan;
+            string outname=stegan.viewpic(filename,uname);
+            cout<<"outtttttttttttt\n";
+            if(outname=="Unauthorized")
+                QMessageBox::warning(this,"Error", "Unauthorized");
+            else
+            {
+            string path="/home/karim/Desktop/build-DIST-Desktop_Qt_5_11_2_GCC_64bit-Debug/"+outname;
+            cout<<path<<endl;
+            QPixmap picture(QString::fromStdString(path));
+            ui->pic->setPixmap(picture.scaled(511,211));
+            int s=remove(outname.c_str());
+
+            }
+        }
+
+
+    }
+    else
+        QMessageBox::warning(this,"Error", "Invalid opcode");
+
 
 }
 
@@ -144,6 +175,7 @@ void home::on_reload_clicked()
     ui->sent->clear();
     ui->rec->clear();
     ui->imagesofuser->clear();
+    cpeer.refresh();
      map <string,struct sockaddr_in> onlineuser_adds=cpeer.CheckOnlineFirst();
      for(auto it:onlineuser_adds)
          ui->users->addItem(QString::fromStdString(it.first+"\n"));

@@ -3,6 +3,7 @@
 #include<cstring>
 #include <fstream>
 #include "steg.h"
+#include<stdio.h>
 
 using namespace std;
 
@@ -94,7 +95,7 @@ int steg::extractcountfromdefault(string extname, string username)
 
 }
 
-void steg::viewpic(string name, string username)
+string steg::viewpic(string name, string username)
 {
   string outname = "hidden_"+name;
   string command =  "steghide extract -sf " + name + " -xf " + outname + " -p 0 -f";
@@ -103,14 +104,16 @@ void steg::viewpic(string name, string username)
   cout << extracted_count << '\n';
   if(extracted_count > 0)
   {
-    cout << extracted_count << '\n';
-    string comm = "xdg-open " + outname;
-    system((char * )(comm.c_str()));
+//    cout << extracted_count << '\n';
+//    string comm = "xdg-open " + outname;
+//    system((char * )(comm.c_str()));
     reembed(name, username, extracted_count-1);
     extractcount(name,username);
+    return outname;
   }
   else {
-    cout << "Unauthorized" << '\n';
+    int s=remove(outname.c_str());
+    return("Unauthorized");
   }
 
 }
