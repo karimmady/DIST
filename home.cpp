@@ -9,6 +9,7 @@
 #include"view.h"
 #include"steg.h"
 #include<stdio.h>
+
 using namespace std;
 
 void call_server(Peer &server)
@@ -161,7 +162,8 @@ void home::on_submit_clicked()
             string outname;
             steg stegan;
             try{
-                outname=stegan.viewpic(filename,uname);
+                string prefix="Received/";
+                outname=stegan.viewpic(filename,uname,prefix);
             }
             catch(exception e)
             {
@@ -171,11 +173,11 @@ void home::on_submit_clicked()
                 QMessageBox::warning(this,"Error", "Unauthorized");
             else
             {
-            string path="/home/karim/Desktop/build-DIST-Desktop_Qt_5_11_2_GCC_64bit-Debug/"+outname;
+            string path="Received/"+outname;
             cout<<path<<endl;
             view *w=new view(path,this);
             w->show();
-            int s=remove(outname.c_str());
+            int s=remove(path.c_str());
 
             }
         }
@@ -207,4 +209,31 @@ void home::on_reload_clicked()
      for(auto it:SentPictures)
         ui->sent->addItem(QString::fromStdString("Picture : " + it.first.second + " ,From User : "+ it.first.first + "\n"));
 
+}
+
+void home::on_upload_clicked()
+{
+    QString qarg1=ui->filepath->text();
+       string fp = qarg1.toUtf8().constData();
+       QString qarg2=ui->filename->text();
+       string fn = qarg2.toUtf8().constData();
+       int s=cpeer.upload(fp,fn);
+       if(!s){
+           QMessageBox::information(this,"Upload", "Uploaded");
+       }
+       else
+       QMessageBox::warning(this,"Error", "file not found");
+}
+
+
+void home::on_remove_clicked()
+{
+    QString qarg1=ui->filepath_remove->text();
+       string fn = qarg1.toUtf8().constData();
+       int s=cpeer.remove(fn);
+       if(!s){
+           QMessageBox::information(this,"Remove", "Removed");
+       }
+       else
+       QMessageBox::warning(this,"Error", "file not found");
 }
