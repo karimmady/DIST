@@ -2,17 +2,15 @@
 #include "ui_view.h"
 #include<map>
 #include<QString>
+#include<QPixmap>
 using namespace std;
-view::view(map< pair <string,string>, string > ReceivedPictures,map< pair <string,string>, int > SentPictures,QWidget *parent) :
+view::view(string path,QWidget *parent) :
     QDialog(parent),
     ui(new Ui::view)
 {
     ui->setupUi(this);
-    for(auto it:ReceivedPictures)
-               ui->rec->addItem(QString::fromStdString("Picture : " + it.first.second + " ,From User : "+ it.first.first + "\n"));
-    for(auto it:SentPictures)
-       ui->sent->addItem(QString::fromStdString("Picture : " + it.first.second + " ,From User : "+ it.first.first + "\n"));
-
+    QPixmap picture(QString::fromStdString(path));
+    ui->pic->setPixmap(picture.scaled(661,401));
 }
 
 view::~view()

@@ -537,7 +537,7 @@ void Peer::UpdateCount (string msg, struct sockaddr_in client)
     count=stoi(msg);
   else
     return;
-  stig.reembed(file_name,user_name,count);
+  stig.SetCounter(file_name,user_name,count);
   cout << " RE EMBEDDED " << endl;
   string ack="Views updated!\n";
   UDPSSocket->changepeerip(client);

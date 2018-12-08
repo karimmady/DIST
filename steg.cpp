@@ -90,9 +90,9 @@ int steg::extractcountfromdefault(string extname, string username)
   string outname = "hidden_"+extname;
   string command =  "steghide extract -sf " + extname + " -xf " + outname + " -p 0 -f";
   system((char*)(command.c_str()));
-
-  return extractcount(outname, username);
-
+  int c = extractcount(outname, username);
+  remove(("/home/karim/Desktop/build-DIST-Desktop_Qt_5_11_2_GCC_64bit-Debug/"+outname).c_str());
+  return c;
 }
 
 string steg::viewpic(string name, string username)
@@ -108,7 +108,7 @@ string steg::viewpic(string name, string username)
 //    string comm = "xdg-open " + outname;
 //    system((char * )(comm.c_str()));
     reembed(name, username, extracted_count-1);
-    extractcount(name,username);
+   // extractcount(name,username);
     return outname;
   }
   else {
@@ -120,5 +120,23 @@ string steg::viewpic(string name, string username)
 
 void steg::SetCounter(string name, string username, int newcount)
 {
-  embedindefault(name, username, newcount);
+    string outname = "hidden_"+name;
+    string command0 =  "steghide extract -sf " + name + " -xf " + outname + " -p 0 -f";
+    system((char*)(command0.c_str()));
+
+    string countfile = "countfile.txt";
+    ofstream o;
+    o.open(countfile);
+    o.clear();
+    o<<username<<" "<<newcount;
+    o.close();
+    cout << "EXTRACTED HIDDEN FILE + " << newcount << endl;
+    string command = "steghide embed -ef " + countfile + " -cf " + outname + " -p 0 -f";
+    system((char*)(command.c_str()));
+    cout << "EMBEDDED TEXT IN HIDDEN + "<< outname << endl;
+    string command2 = "steghide embed -ef " + outname + " -cf " + name + " -p 0 -f";
+    system((char*)(command2.c_str()));
+    cout << "Embedded Hidden in Default + " << name << endl;
+    remove("countfile.txt");
+    remove(("/home/karim/Desktop/build-DIST-Desktop_Qt_5_11_2_GCC_64bit-Debug/"+outname).c_str());
 }

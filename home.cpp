@@ -79,7 +79,12 @@ void home::on_submit_clicked()
              QMessageBox::warning(this,"Error", "Please enter username");
          else{
              vector<string>pics;
-             pics=cpeer.Inquire(uname);
+             try{
+             pics=cpeer.Inquire(uname);}
+             catch(exception e)
+             {
+                 cout << e.what()<< endl;
+             }
              ui->nameofowner->setText(qarg2);
              for(int i=0;i<pics.size();i++)
                  ui->imagesofuser->addItem(QString::fromStdString(pics[i]));
@@ -96,25 +101,29 @@ void home::on_submit_clicked()
            QMessageBox::warning(this,"Error", "Please enter File name");
         else if(views=="")
             QMessageBox::warning(this,"Error", "Please enter views");
-        else
-            cpeer.req(uname,filename,views);
+        else  {
+            try{
+            cpeer.req(uname,filename,views);}
+            catch(exception e){
+               cout << e.what() << endl;}
+        }
     }
     else if(z == 2) //Change Count
     {
-        map< pair <string,string>, string > ReceivedPictures;
-        ReceivedPictures=cpeer.CheckReceievedPictures();
-        map< pair <string,string>, int > SentPictures;
-        SentPictures=cpeer.CheckSentPictures();
-        view *v=new view(ReceivedPictures,SentPictures,this);
-        v->show();
         if(uname=="")
            QMessageBox::warning(this,"Error", "Please enter username");
         else if(filename=="")
            QMessageBox::warning(this,"Error", "Please enter File name");
         else if(views=="")
             QMessageBox::warning(this,"Error", "Please enter views");
-        else
-            cpeer.ControlAccess(uname,filename,views);
+        else{
+            try{
+            cpeer.ControlAccess(uname,filename,views);}
+            catch(exception e)
+            {
+                cout << e.what() << endl;
+            }
+        }
     }
     else if(z == 3)  //View Count
      {
@@ -124,10 +133,14 @@ void home::on_submit_clicked()
            QMessageBox::warning(this,"Error", "Please enter File name");
         else{
             int views;
+            try{
            views=cpeer.ViewCount(uname,filename);
-           if(views==0)
-               QMessageBox::warning(this,"Error","Error");
-           else if(views==-1)
+            }
+            catch(exception e)
+            {
+                cout << e.what() << endl;
+            }
+           if(views==-1)
                QMessageBox::warning(this,"Error", "User is not online");
            else
            {
@@ -145,17 +158,23 @@ void home::on_submit_clicked()
            QMessageBox::warning(this,"Error", "Please enter File name");
         else
         {
+            string outname;
             steg stegan;
-            string outname=stegan.viewpic(filename,uname);
-            cout<<"outtttttttttttt\n";
+            try{
+                outname=stegan.viewpic(filename,uname);
+            }
+            catch(exception e)
+            {
+                cout << e.what() << endl;
+            }
             if(outname=="Unauthorized")
                 QMessageBox::warning(this,"Error", "Unauthorized");
             else
             {
             string path="/home/karim/Desktop/build-DIST-Desktop_Qt_5_11_2_GCC_64bit-Debug/"+outname;
             cout<<path<<endl;
-            QPixmap picture(QString::fromStdString(path));
-            ui->pic->setPixmap(picture.scaled(511,211));
+            view *w=new view(path,this);
+            w->show();
             int s=remove(outname.c_str());
 
             }
