@@ -163,7 +163,20 @@ void ServiceDirectory::Listen()
                             }
                         }
                     }
-                }
+                    UDPSSocket->changepeerip(user_addresses[user]);
+                    for(auto it: user_addresses)
+                    {
+                        struct sockaddr_in x;
+                        string onlineusers=to_string(x.sin_addr.s_addr)+ " " + to_string(x.sin_port)+ " " + it.first;
+                        Message onusers(1,(char *)(onlineusers.c_str()),onlineusers.length(),rpcid,Up);
+                        string onusers_marsh = onusers.marshal(2+2+onlineusers.length());
+                        int amountsent = UDPSSocket->writeToSocket(onusers_marsh,sendsize);
+                    }
+                    string end="end";
+                    Message m((char*)(end.c_str()));
+                    string x=m.marshal(end.length());
+                    UDPSSocket->writeToSocket(x,sendsize);
+            }
 
 	}
 }

@@ -144,6 +144,7 @@ void home::on_reload_clicked()
     ui->sent->clear();
     ui->rec->clear();
     ui->imagesofuser->clear();
+    cpeer.refresh();
      map <string,struct sockaddr_in> onlineuser_adds=cpeer.CheckOnlineFirst();
      for(auto it:onlineuser_adds)
          ui->users->addItem(QString::fromStdString(it.first+"\n"));

@@ -263,11 +263,15 @@ void Peer::refresh()
   string marshalled=m.marshal(4+x.length());
   int z=UDPSDSocket->writeToSocket(marshalled,sendsize);
   string user;
+
+  onlineuser_adds.clear();
+  onlineusers.clear();
   while(true)
   {
     string mess=UDPSDSocket->readFromSocketWithTimeout(100);
     Message m((char *)(mess.c_str()));
     mess=m.demarshal();
+    cout << "User: " << mess << endl;
     if(mess=="end")
       break;
     int ip=mess.find(' ');
@@ -275,8 +279,6 @@ void Peer::refresh()
     int port=mess.find(' ');
     mess.erase(0,mess.find(' ')+1);
     user=mess;
-    onlineuser_adds.clear();
-    onlineusers.clear();
     struct sockaddr_in useradd;
     useradd.sin_family=AF_INET;
     useradd.sin_port=port;
