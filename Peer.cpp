@@ -586,7 +586,7 @@ void Peer::rec()
     struct sockaddr_in client;
     bool flag = true;
     cout << "rec\n";
-		string req=UDPSSocket->readFromSocketWithTimeout(90,client,flag);
+        string req=UDPSSocket->readFromSocketWithTimeout(10,client,flag);
     if(!flag)
       continue;
 		Message receivedmessage((char *)(req.c_str()));

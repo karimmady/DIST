@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>home</class>
+ <widget class="QDialog" name="home">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>994</width>
+    <height>667</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <widget class="QListWidget" name="imagesofuser">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>120</y>
+     <width>221</width>
+     <height>211</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QListWidget" name="users">
+   <property name="geometry">
+    <rect>
+     <x>760</x>
+     <y>120</y>
+     <width>221</width>
+     <height>211</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>320</x>
+     <y>20</y>
+     <width>321</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Sans</family>
+     <pointsize>30</pointsize>
+     <weight>75</weight>
+     <italic>true</italic>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Instaghram</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QListWidget" name="opcodes">
+   <property name="geometry">
+    <rect>
+     <x>240</x>
+     <y>120</y>
+     <width>511</width>
+     <height>131</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>240</x>
+     <y>90</y>
+     <width>261</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Operation codes :</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>240</x>
+     <y>270</y>
+     <width>201</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Please enter operation code </string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="op">
+   <property name="geometry">
+    <rect>
+     <x>240</x>
+     <y>300</y>
+     <width>211</width>
+     <height>25</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_4">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>90</y>
+     <width>91</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Images of</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_5">
+   <property name="geometry">
+    <rect>
+     <x>830</x>
+     <y>90</y>
+     <width>101</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Online users</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="submit">
+   <property name="geometry">
+    <rect>
+     <x>430</x>
+     <y>630</y>
+     <width>141</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Submit</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="username">
+   <property name="geometry">
+    <rect>
+     <x>540</x>
+     <y>300</y>
+     <width>211</width>
+     <height>25</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_6">
+   <property name="geometry">
+    <rect>
+     <x>540</x>
+     <y>270</y>
+     <width>81</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Username</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_7">
+   <property name="geometry">
+    <rect>
+     <x>240</x>
+     <y>330</y>
+     <width>81</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Image</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="Image">
+   <property name="geometry">
+    <rect>
+     <x>240</x>
+     <y>360</y>
+     <width>211</width>
+     <height>25</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="Views">
+   <property name="geometry">
+    <rect>
+     <x>540</x>
+     <y>360</y>
+     <width>211</width>
+     <height>25</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_8">
+   <property name="geometry">
+    <rect>
+     <x>540</x>
+     <y>330</y>
+     <width>81</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Views</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="pic">
+   <property name="geometry">
+    <rect>
+     <x>240</x>
+     <y>410</y>
+     <width>511</width>
+     <height>141</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>TextLabel</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="reload">
+   <property name="geometry">
+    <rect>
+     <x>830</x>
+     <y>60</y>
+     <width>89</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Reload</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="nameofowner">
+   <property name="geometry">
+    <rect>
+     <x>110</x>
+     <y>90</y>
+     <width>71</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QListWidget" name="sent">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>350</y>
+     <width>221</width>
+     <height>211</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_9">
+   <property name="geometry">
+    <rect>
+     <x>70</x>
+     <y>330</y>
+     <width>101</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Sent Pictures</string>
+   </property>
+  </widget>
+  <widget class="QListWidget" name="rec">
+   <property name="geometry">
+    <rect>
+     <x>760</x>
+     <y>350</y>
+     <width>221</width>
+     <height>211</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_10">
+   <property name="geometry">
+    <rect>
+     <x>810</x>
+     <y>330</y>
+     <width>141</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Receieved Pictures</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="upload">
+   <property name="geometry">
+    <rect>
+     <x>840</x>
+     <y>640</y>
+     <width>89</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Upload</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="filepath">
+   <property name="geometry">
+    <rect>
+     <x>790</x>
+     <y>600</y>
+     <width>201</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_11">
+   <property name="geometry">
+    <rect>
+     <x>720</x>
+     <y>600</y>
+     <width>67</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>File Path</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_12">
+   <property name="geometry">
+    <rect>
+     <x>710</x>
+     <y>580</y>
+     <width>67</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>File Name</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="filename">
+   <property name="geometry">
+    <rect>
+     <x>790</x>
+     <y>570</y>
+     <width>201</width>
+     <height>25</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="filepath_remove">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>580</y>
+     <width>161</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="filelabel_remove">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>580</y>
+     <width>67</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>File Name</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="remove">
+   <property name="geometry">
+    <rect>
+     <x>140</x>
+     <y>610</y>
+     <width>89</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Remove</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="reloadpictures">
+   <property name="geometry">
+    <rect>
+     <x>430</x>
+     <y>600</y>
+     <width>141</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Reload Pictures</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

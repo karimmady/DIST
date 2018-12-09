@@ -190,25 +190,29 @@ void home::on_submit_clicked()
 
 }
 
-void home::on_reload_clicked()
+void home::on_reloadpictures_clicked()
 {
-    ui->users->clear();
     ui->sent->clear();
     ui->rec->clear();
     ui->imagesofuser->clear();
+    SentPictures.clear();
+    ReceivedPictures.clear();
+    SentPictures=cpeer.CheckSentPictures();
+    ReceivedPictures=cpeer.CheckReceievedPictures();
+    for(auto it:ReceivedPictures)
+               ui->rec->addItem(QString::fromStdString("Picture : " + it.first.second + " ,From User : "+ it.first.first + "\n"));
+    for(auto it:SentPictures)
+       ui->sent->addItem(QString::fromStdString("Picture : " + it.first.second + " ,From User : "+ it.first.first + "\n"));
+
+
+}
+void home::on_reload_clicked()
+{
+    ui->users->clear();
     cpeer.refresh();
      map <string,struct sockaddr_in> onlineuser_adds=cpeer.CheckOnlineFirst();
      for(auto it:onlineuser_adds)
          ui->users->addItem(QString::fromStdString(it.first+"\n"));
-     SentPictures.clear();
-     ReceivedPictures.clear();
-     SentPictures=cpeer.CheckSentPictures();
-     ReceivedPictures=cpeer.CheckReceievedPictures();
-     for(auto it:ReceivedPictures)
-                ui->rec->addItem(QString::fromStdString("Picture : " + it.first.second + " ,From User : "+ it.first.first + "\n"));
-     for(auto it:SentPictures)
-        ui->sent->addItem(QString::fromStdString("Picture : " + it.first.second + " ,From User : "+ it.first.first + "\n"));
-
 }
 
 void home::on_upload_clicked()
@@ -223,6 +227,9 @@ void home::on_upload_clicked()
        }
        else
        QMessageBox::warning(this,"Error", "file not found");
+
+    ui->filename->clear();
+    ui->filepath->clear();
 }
 
 
@@ -236,4 +243,6 @@ void home::on_remove_clicked()
        }
        else
        QMessageBox::warning(this,"Error", "file not found");
+
+    ui->filepath_remove->clear();
 }
