@@ -146,6 +146,7 @@ char * UDPSocket::readFromSocketWithTimeout(int timeoutSeconds, bool& flag)
 {
 	memset(buffer,0,sizeof(buffer));
 	socklen_t x= sizeof(struct sockaddr_in);
+    flag=true;
 	int amount=0;
 	struct timeval tv;
 	tv.tv_sec = timeoutSeconds;

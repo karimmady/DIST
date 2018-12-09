@@ -205,7 +205,6 @@ vector<string> Peer::Inquire(string requser)
   	int amountrep = UDPCSocket->writeToSocket(marshs,sendsize);
   	string inquired;
   	cout << "Start of Inquiry\n";
-    cout << "el inquire fein yabn el ab7a\n";
     //Watch for packet drop /*******************************************
 
     do {
@@ -254,6 +253,32 @@ int Peer::ViewCount(string requser,string filename)
     }
 }
 
+int Peer::remove(string filename)
+{
+    string command = "rm -f " + filename;
+    system((char*)(command.c_str()));
+    return 1;
+}
+int Peer::upload(string filepath,string filename)
+{
+
+    // cp /path/to/source.txt .
+    ifstream x;
+    x.open(filepath);
+    if(!x){
+        x.close();
+        return 1;
+    }
+    else
+    {
+        string command = "cp " + filepath + " .";
+        system((char*)(command.c_str()));
+        uploadedpics[filename]=filepath;
+    }
+    x.close();
+    return 0;
+}
+
 void Peer::refresh()
 {
   string x=username;
@@ -263,7 +288,6 @@ void Peer::refresh()
   string marshalled=m.marshal(4+x.length());
   int z=UDPSDSocket->writeToSocket(marshalled,sendsize);
   string user;
-
   onlineuser_adds.clear();
   onlineusers.clear();
   while(true)
@@ -271,9 +295,9 @@ void Peer::refresh()
     string mess=UDPSDSocket->readFromSocketWithTimeout(100);
     Message m((char *)(mess.c_str()));
     mess=m.demarshal();
-    cout << "User: " << mess << endl;
     if(mess=="end")
       break;
+    cout << mess << endl;
     int ip=mess.find(' ');
     mess.erase(0,mess.find(' ')+1);
     int port=mess.find(' ');
@@ -305,7 +329,8 @@ map< pair <string,string>, string > Peer::CheckReceievedPictures()
 void Peer::ViewPicture(string filename)
 {
   steg stig;
-  stig.viewpic(filename,username);
+  string prefix="Received/";
+  stig.viewpic(filename,username,prefix);
 
 }
 bool Peer::ControlAccess(string requser, string filename, string count)
@@ -393,8 +418,8 @@ int Peer::req(string requser,string filename,string views)
 
       Message receivedimg((char*)(imgm.c_str()));
       img = receivedimg.demarshal();
-
-      ofstream fileo(filename,ios::binary);
+      string filepath = "Received/"+filename;
+      ofstream fileo(filepath,ios::binary);
       fileo.write(img.c_str(),img.length());
       cout << "Image Received with size " << img.length() << " bytes" << endl;
       pair<string,string> p1;
@@ -423,10 +448,13 @@ void Peer::InquiryReply(string msg,struct sockaddr_in client)
 	for(int i = 0; i<vec.size(); i++)
 		{
       //Watch for Dropped Packets
-			Message names((char *)(vec[i].c_str()));
-			string marshname=names.marshal(vec[i].length());
-			int amountrep=UDPSSocket->writeToSocket(marshname,sendsize);
-		}
+            if(uploadedpics.find(vec[i]) != uploadedpics.end())
+            {
+                Message names((char *)(vec[i].c_str()));
+                string marshname=names.marshal(vec[i].length());
+                int amountrep=UDPSSocket->writeToSocket(marshname,sendsize);
+            }
+        }
 	Message endf((char *)(end.c_str()));
 	string marshend = endf.marshal(end.length());
 	int amountrep=UDPSSocket->writeToSocket(marshend,sendsize);
@@ -435,78 +463,78 @@ void Peer::InquiryReply(string msg,struct sockaddr_in client)
 
 bool Peer::SendPicture(string recvs,struct sockaddr_in client)
 {
-  string uname = recvs.substr(0,recvs.find(' '));
-  recvs.erase(0,recvs.find(' ')+1);
-  string filename = recvs.substr(0,recvs.find(' '));
-  recvs.erase(0,recvs.find(' ')+1);
-  int views;
-  if(is_number(recvs))
-    views = stoi(recvs);
-  else
-    return 0;
-  ifstream di;
-  di.open(filename, ios::binary);
+    string uname = recvs.substr(0,recvs.find(' '));
+    recvs.erase(0,recvs.find(' ')+1);
+    string filename = recvs.substr(0,recvs.find(' '));
+    recvs.erase(0,recvs.find(' ')+1);
+      int views;
+      if(is_number(recvs))
+        views = stoi(recvs);
+      else
+        return 0;
+      ifstream di;
+      string filepath=uploadedpics[filename];
+      di.open(filepath, ios::binary);
 
-  UDPSSocket->changepeerip(client);
+      UDPSSocket->changepeerip(client);
 
-  if(!di)
-  {
-    cout << "Image not Found " << endl;
-    string nf="Image not found\n";
-    Message notfound((char *)(nf.c_str()));
-    string marshnf=notfound.marshal(nf.length());
-    int amountrep=UDPSSocket->writeToSocket(marshnf,sendsize);
-  }
-  else
-  {
-    cout << "filename :" << filename << endl;
-    steg stig;
-    stig.embedindefault(filename,uname,views);
-    string def = "default.jpg";
-    di.close();
-    di.open(def,ios::binary);
-    ostringstream oss;
-    oss << di.rdbuf();
-    string s(oss.str());
-
-    Message picture((char*)(s.c_str()));
-    int picbytes=-1;
-    string marshalled_image=picture.marshal(s.length());
-
-    int no_of_packets = ceil(marshalled_image.length()/60000.0);
-    string packs=to_string(no_of_packets);
-    Message packets((char *)(packs.c_str()));
-    string marshalledpacks = packets.marshal(packs.length());
-    int amountr = UDPSSocket->writeToSocket(marshalledpacks,sendsize);
-    vector<string> vec;
-    vec = fragment(marshalled_image);
-    int i = 0;
-    bool flag;
-    while(true)
-    {
-      cout << "loop " << i << endl;
-      flag = true;
-      int amountrep = UDPSSocket->writeToSocket(vec[i],sendsize);
-
-      string approved = UDPSSocket->readFromSocketWithTimeout(2,flag);
-      UDPCSocket->changepeerip(client);
-      Message packsnumber((char *)(approved.c_str()));
-      string ack = packsnumber.demarshal();
-      cout << "ACKNOWLEDGED " << ack << endl;
-      if(is_number(ack))
+      if(!di)
       {
-        if((flag)&&(stoi(ack) == i))
-          i++;
-        if(i > vec.size()-1)
-          break;
+        cout << "Image not Found " << endl;
+        string nf="Image not found\n";
+        Message notfound((char *)(nf.c_str()));
+        string marshnf=notfound.marshal(nf.length());
+        int amountrep=UDPSSocket->writeToSocket(marshnf,sendsize);
       }
-    }
-    di.close();
-    pair<string,string> p1;
-    p1 = make_pair(uname,filename);   // making pair of uname/filename
-    SentPictures[p1] = views;
-  }
+      else
+      {
+        cout << "filename :" << filename << endl;
+        steg stig;
+        stig.embedindefault(filename,uname,views);
+        string def = "default.jpg";
+        di.close();
+        di.open(def,ios::binary);
+        ostringstream oss;
+        oss << di.rdbuf();
+        string s(oss.str());
 
+        Message picture((char*)(s.c_str()));
+        int picbytes=-1;
+        string marshalled_image=picture.marshal(s.length());
+
+        int no_of_packets = ceil(marshalled_image.length()/60000.0);
+        string packs=to_string(no_of_packets);
+        Message packets((char *)(packs.c_str()));
+        string marshalledpacks = packets.marshal(packs.length());
+        int amountr = UDPSSocket->writeToSocket(marshalledpacks,sendsize);
+        vector<string> vec;
+        vec = fragment(marshalled_image);
+        int i = 0;
+        bool flag;
+        while(true)
+        {
+          cout << "loop " << i << endl;
+          flag = true;
+          int amountrep = UDPSSocket->writeToSocket(vec[i],sendsize);
+
+          string approved = UDPSSocket->readFromSocketWithTimeout(2,flag);
+          UDPCSocket->changepeerip(client);
+          Message packsnumber((char *)(approved.c_str()));
+          string ack = packsnumber.demarshal();
+          cout << "ACKNOWLEDGED " << ack << endl;
+          if(is_number(ack))
+          {
+            if((flag)&&(stoi(ack) == i))
+              i++;
+            if(i > vec.size()-1)
+              break;
+          }
+        }
+        di.close();
+        pair<string,string> p1;
+        p1 = make_pair(uname,filename);   // making pair of uname/filename
+        SentPictures[p1] = views;
+  }
 }
 void Peer::ReturnNumOfViews(string msg, struct sockaddr_in client)
 {
@@ -516,7 +544,8 @@ void Peer::ReturnNumOfViews(string msg, struct sockaddr_in client)
   int pos= msg.find(" ");
   user_name=msg.substr(0,pos);
   file_name= msg.substr(pos+1, msg.length());
-  int viewcount = stig.extractcountfromdefault(file_name,user_name);
+  string prefix="Received/";
+  int viewcount = stig.extractcountfromdefault(file_name,user_name,prefix);
   cout << "Extracted Count " << viewcount << endl;
   string v=to_string(viewcount);
   //sprintf(v,"%d",viewcount);
@@ -539,7 +568,8 @@ void Peer::UpdateCount (string msg, struct sockaddr_in client)
     count=stoi(msg);
   else
     return;
-  stig.reembed(file_name,user_name,count);
+  string prefix="Received/";
+  stig.SetCounter(file_name,user_name,count,prefix);
   cout << " RE EMBEDDED " << endl;
   string ack="Views updated!\n";
   UDPSSocket->changepeerip(client);
@@ -556,7 +586,7 @@ void Peer::rec()
     struct sockaddr_in client;
     bool flag = true;
     cout << "rec\n";
-		string req=UDPSSocket->readFromSocketWithTimeout(90,client,flag);
+        string req=UDPSSocket->readFromSocketWithTimeout(10,client,flag);
     if(!flag)
       continue;
 		Message receivedmessage((char *)(req.c_str()));

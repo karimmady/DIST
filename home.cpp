@@ -7,6 +7,9 @@
 #include<vector>
 #include <thread>
 #include"view.h"
+#include"steg.h"
+#include<stdio.h>
+
 using namespace std;
 
 void call_server(Peer &server)
@@ -23,7 +26,7 @@ home::home(Peer &cspeer,QWidget *parent) :
     server.detach();
 
     ui->setupUi(this);
-    QString ops="0 - Inquire About Pictures at User.\n1 - Request Picture from User.\n2 - Change view count at certain user.\n3 - View current counter at certain user.\n4 - View Picture.\n5 - Terminate Program. \n";
+    QString ops="0 - Inquire About Pictures at User.\n1 - Request Picture from User.\n2 - Change view count at certain user.\n3 - View current counter at certain user.\n4 - View Picture.\n";
     ui->opcodes->addItem(ops);
     cout << "Home\n";
     QPixmap pix("/home/karim/Desktop/DIST/c.jpg");
@@ -77,7 +80,12 @@ void home::on_submit_clicked()
              QMessageBox::warning(this,"Error", "Please enter username");
          else{
              vector<string>pics;
-             pics=cpeer.Inquire(uname);
+             try{
+             pics=cpeer.Inquire(uname);}
+             catch(exception e)
+             {
+                 cout << e.what()<< endl;
+             }
              ui->nameofowner->setText(qarg2);
              for(int i=0;i<pics.size();i++)
                  ui->imagesofuser->addItem(QString::fromStdString(pics[i]));
@@ -94,25 +102,29 @@ void home::on_submit_clicked()
            QMessageBox::warning(this,"Error", "Please enter File name");
         else if(views=="")
             QMessageBox::warning(this,"Error", "Please enter views");
-        else
-            cpeer.req(uname,filename,views);
+        else  {
+            try{
+            cpeer.req(uname,filename,views);}
+            catch(exception e){
+               cout << e.what() << endl;}
+        }
     }
     else if(z == 2) //Change Count
     {
-        map< pair <string,string>, string > ReceivedPictures;
-        ReceivedPictures=cpeer.CheckReceievedPictures();
-        map< pair <string,string>, int > SentPictures;
-        SentPictures=cpeer.CheckSentPictures();
-        view *v=new view(ReceivedPictures,SentPictures,this);
-        v->show();
         if(uname=="")
            QMessageBox::warning(this,"Error", "Please enter username");
         else if(filename=="")
            QMessageBox::warning(this,"Error", "Please enter File name");
         else if(views=="")
             QMessageBox::warning(this,"Error", "Please enter views");
-        else
-            cpeer.ControlAccess(uname,filename,views);
+        else{
+            try{
+            cpeer.ControlAccess(uname,filename,views);}
+            catch(exception e)
+            {
+                cout << e.what() << endl;
+            }
+        }
     }
     else if(z == 3)  //View Count
      {
@@ -122,10 +134,14 @@ void home::on_submit_clicked()
            QMessageBox::warning(this,"Error", "Please enter File name");
         else{
             int views;
+            try{
            views=cpeer.ViewCount(uname,filename);
-           if(views==0)
-               QMessageBox::warning(this,"Error","Error");
-           else if(views==-1)
+            }
+            catch(exception e)
+            {
+                cout << e.what() << endl;
+            }
+           if(views==-1)
                QMessageBox::warning(this,"Error", "User is not online");
            else
            {
@@ -135,26 +151,98 @@ void home::on_submit_clicked()
 
         }
      }
+    else if(z==4)
+    {
+        if(uname=="")
+           QMessageBox::warning(this,"Error", "Please enter username");
+        else if(filename=="")
+           QMessageBox::warning(this,"Error", "Please enter File name");
+        else
+        {
+            string outname;
+            steg stegan;
+            try{
+                string prefix="Received/";
+                outname=stegan.viewpic(filename,uname,prefix);
+            }
+            catch(exception e)
+            {
+                cout << e.what() << endl;
+            }
+            if(outname=="Unauthorized")
+                QMessageBox::warning(this,"Error", "Unauthorized");
+            else
+            {
+            string path="Received/"+outname;
+            cout<<path<<endl;
+            view *w=new view(path,this);
+            w->show();
+            int s=remove(path.c_str());
+
+            }
+        }
+
+
+    }
+    else
+        QMessageBox::warning(this,"Error", "Invalid opcode");
+
 
 }
 
-void home::on_reload_clicked()
+void home::on_reloadpictures_clicked()
 {
-    ui->users->clear();
     ui->sent->clear();
     ui->rec->clear();
     ui->imagesofuser->clear();
+    SentPictures.clear();
+    ReceivedPictures.clear();
+    SentPictures=cpeer.CheckSentPictures();
+    ReceivedPictures=cpeer.CheckReceievedPictures();
+    for(auto it:ReceivedPictures)
+               ui->rec->addItem(QString::fromStdString("Picture : " + it.first.second + " ,From User : "+ it.first.first + "\n"));
+    for(auto it:SentPictures)
+       ui->sent->addItem(QString::fromStdString("Picture : " + it.first.second + " ,From User : "+ it.first.first + "\n"));
+
+
+}
+void home::on_reload_clicked()
+{
+    ui->users->clear();
     cpeer.refresh();
      map <string,struct sockaddr_in> onlineuser_adds=cpeer.CheckOnlineFirst();
      for(auto it:onlineuser_adds)
          ui->users->addItem(QString::fromStdString(it.first+"\n"));
-     SentPictures.clear();
-     ReceivedPictures.clear();
-     SentPictures=cpeer.CheckSentPictures();
-     ReceivedPictures=cpeer.CheckReceievedPictures();
-     for(auto it:ReceivedPictures)
-                ui->rec->addItem(QString::fromStdString("Picture : " + it.first.second + " ,From User : "+ it.first.first + "\n"));
-     for(auto it:SentPictures)
-        ui->sent->addItem(QString::fromStdString("Picture : " + it.first.second + " ,From User : "+ it.first.first + "\n"));
+}
 
+void home::on_upload_clicked()
+{
+    QString qarg1=ui->filepath->text();
+       string fp = qarg1.toUtf8().constData();
+       QString qarg2=ui->filename->text();
+       string fn = qarg2.toUtf8().constData();
+       int s=cpeer.upload(fp,fn);
+       if(!s){
+           QMessageBox::information(this,"Upload", "Uploaded");
+       }
+       else
+       QMessageBox::warning(this,"Error", "file not found");
+
+    ui->filename->clear();
+    ui->filepath->clear();
+}
+
+
+void home::on_remove_clicked()
+{
+    QString qarg1=ui->filepath_remove->text();
+       string fn = qarg1.toUtf8().constData();
+       int s=cpeer.remove(fn);
+       if(!s){
+           QMessageBox::information(this,"Remove", "Removed");
+       }
+       else
+       QMessageBox::warning(this,"Error", "file not found");
+
+    ui->filepath_remove->clear();
 }
