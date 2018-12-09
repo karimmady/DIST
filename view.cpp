@@ -11,6 +11,7 @@ view::view(string path,QWidget *parent) :
     ui->setupUi(this);
     QPixmap picture(QString::fromStdString(path));
     ui->pic->setPixmap(picture.scaled(661,401));
+    remove(path.c_str());
 }
 
 view::~view()

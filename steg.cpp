@@ -110,7 +110,6 @@ string steg::viewpic(string name, string username,string prefix)
 //    system((char * )(comm.c_str()));
     reembed(name, username, extracted_count-1,prefix);
    // extractcount(name,username);
-    remove((prefix+outname).c_str());
     remove((prefix+"countfile.txt").c_str());
     return outname;
   }
