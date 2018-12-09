@@ -26,6 +26,8 @@ private slots:
 
     void on_remove_clicked();
 
+    void on_reloadpictures_clicked();
+
 private:
     Ui::home *ui;
     Peer cpeer;

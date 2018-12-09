@@ -118,7 +118,6 @@ char * UDPSocket::readFromSocketWithTimeout(int timeoutSeconds,struct sockaddr_i
 	amount=recvfrom(sock,buffer,1000000,MSG_WAITALL, (sockaddr *) &client, (&x));
 	if(amount==-1)
 		{
-			cerr << "Timeout\n";
 			flag = false;
 		}
 

@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 #include <fstream>
+#include <mutex>
 using namespace std;
 
 class Peer
@@ -15,7 +16,9 @@ class Peer
     private:
         UDPSocket * UDPCSocket;
         UDPSocket * UDPSSocket;
+        mutex socklock;
         UDPSocket * UDPSDSocket;
+        UDPSocket * UDPPSocket;
         struct sockaddr_in myinfo;
         vector<string> onlineusers;
         map <string,struct sockaddr_in> onlineuser_adds;
@@ -45,7 +48,7 @@ class Peer
         map <string,struct sockaddr_in> CheckOnlineFirst();
         vector<string> Inquire(string);
 		void TerminateThread();
-		bool SendPicture(string recvs,struct sockaddr_in client);
+        void SendPicture(string recvs,struct sockaddr_in client);
 		void InquiryReply(string msg,struct sockaddr_in client);
 		bool ControlAccess(string requser, string filename, string count);
 		int req(string requser, string filename, string views);

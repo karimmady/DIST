@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>994</width>
-    <height>658</height>
+    <height>667</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -134,7 +134,7 @@
    <property name="geometry">
     <rect>
      <x>430</x>
-     <y>620</y>
+     <y>630</y>
      <width>141</width>
      <height>31</height>
     </rect>
@@ -300,8 +300,8 @@
   <widget class="QPushButton" name="upload">
    <property name="geometry">
     <rect>
-     <x>810</x>
-     <y>620</y>
+     <x>840</x>
+     <y>640</y>
      <width>89</width>
      <height>25</height>
     </rect>
@@ -313,8 +313,8 @@
   <widget class="QLineEdit" name="filepath">
    <property name="geometry">
     <rect>
-     <x>460</x>
-     <y>580</y>
+     <x>790</x>
+     <y>600</y>
      <width>201</width>
      <height>25</height>
     </rect>
@@ -326,8 +326,8 @@
   <widget class="QLabel" name="label_11">
    <property name="geometry">
     <rect>
-     <x>380</x>
-     <y>580</y>
+     <x>720</x>
+     <y>600</y>
      <width>67</width>
      <height>21</height>
     </rect>
@@ -353,7 +353,7 @@
    <property name="geometry">
     <rect>
      <x>790</x>
-     <y>580</y>
+     <y>570</y>
      <width>201</width>
      <height>25</height>
     </rect>
@@ -396,6 +396,19 @@
    </property>
    <property name="text">
     <string>Remove</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="reloadpictures">
+   <property name="geometry">
+    <rect>
+     <x>430</x>
+     <y>600</y>
+     <width>141</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Reload Pictures</string>
    </property>
   </widget>
  </widget>

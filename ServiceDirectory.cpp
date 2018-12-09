@@ -22,7 +22,7 @@ ServiceDirectory::ServiceDirectory(int myaddr,int myport)
 
 	while(authTableIn >> username >> password)
 	{
-		users[username]=password;
+        sysusers[username]=password;
 	}
 
 	authTableIn.close();
@@ -32,6 +32,7 @@ bool ServiceDirectory::Register(string username, string password)
 {
 	if(users.find(username)==users.end())
 	{
+            sysusers[username]=password;
 			users[username]=password;
 			cout << "Registered: " << username << " " << password << endl;
 			authTableOut.open("authtable.txt");
@@ -142,8 +143,9 @@ void ServiceDirectory::Listen()
 			int amountsent=UDPSSocket->writeToSocket(rep_marsh,sendsize);
 		}
         else if(opi==6)
-                {
+        {
                     string user=rec;
+                    cout << user << endl;
                     string ping="ping";
                     for(auto it : user_addresses)
                     {
@@ -153,33 +155,49 @@ void ServiceDirectory::Listen()
                             string l=m.marshal(4+ping.length());
                             UDPSSocket->changepeerip(it.second);
                             int amountsent=UDPSSocket->writeToSocket(l,sendsize);
-                            bool x;
-                            string s=UDPSSocket->readFromSocketWithTimeout(100,x);
+                            bool x=false;
+                            string s=UDPSSocket->readFromSocketWithTimeout(3,x);
                             Message mm((char *)(s.c_str()));
                             string reply=mm.demarshal();
+                            cout << it.first << " " << reply << endl;
                             if(reply!="ok")
                             {
                                 users.erase(it.first);
+                                user_addresses.erase(it.first);
                             }
+
                         }
                     }
-                }
-
+                    UDPSSocket->changepeerip(client);
+                    for(auto it: user_addresses)
+                    {
+                        struct sockaddr_in x=it.second;
+                        string onlineusers=to_string(x.sin_addr.s_addr)+ " " + to_string(x.sin_port)+ " " + it.first;
+                        Message onusers((char *)(onlineusers.c_str()));
+                        string onusers_marsh = onusers.marshal(onlineusers.length());
+                        int amountsent = UDPSSocket->writeToSocket(onusers_marsh,sendsize);
+                    }
+                    string end="end";
+                    Message m((char*)(end.c_str()));
+                    string x=m.marshal(end.length());
+                    UDPSSocket->writeToSocket(x,sendsize);
+        }
 	}
 }
 
 
 bool ServiceDirectory::Authenticate(string username, string password,struct sockaddr_in add,int serverport)
 {
-	if(users.find(username)!=users.end())
+    if(sysusers.find(username)!=sysusers.end())
 	{
-		if(users[username]==password)
+        if(sysusers[username]==password)
 		{
 			cout << username <<" "<< password << endl;
 			cout << "Logged in\n";
 			user_addresses[username].sin_family=AF_INET;
 			user_addresses[username].sin_addr.s_addr=add.sin_addr.s_addr;
 			user_addresses[username].sin_port=serverport;
+            users[username]=password;
 			return true;
 		}
 	}

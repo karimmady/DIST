@@ -25,6 +25,7 @@ class ServiceDirectory
 		ofstream authTableOut;
 		ifstream authTableIn;
 		map <string,string> users;
+        map <string,string> sysusers;
 		map <string,struct sockaddr_in> user_addresses;
 		UDPSocket * UDPSSocket;
 		UDPSocket * UDPCSocket;

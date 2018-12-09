@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <fstream>
 #include <vector>
+#include <thread>
 #include "math.h"
 #include "dirent.h"
 #include "steg.h"
@@ -31,6 +32,7 @@ Peer::Peer(Peer &x)
     //cout << " " <<UDPCSocket->sock << endl;
     //cout << "Server Sock " << x.UDPSSocket->sock;
     UDPSSocket=x.UDPSSocket;
+    UDPPSocket=x.UDPPSocket;
     //cout << " "<< UDPSSocket->sock << endl;
     //cout << "SD Sock " << x.UDPSDSocket->sock;
     UDPSDSocket=x.UDPSDSocket;
@@ -68,11 +70,16 @@ Peer::Peer(int _myAddr,int serverAddr, int _port,int port2,bool &binded)
     UDPCSocket=new UDPClientSocket;
 	UDPSSocket=new UDPServerSocket;
   UDPSDSocket=new UDPClientSocket;
+  UDPPSocket=new UDPServerSocket;
   int x;
 
     UDPCSocket->initializeClient(_myAddr,serverAddr, port2);
   UDPSDSocket->initializeClient(_myAddr,serverAddr,_port,x);
 	binded=UDPSSocket->initializeServer(_myAddr,_port);
+    bool binded2=UDPPSocket->initializeServer(_myAddr,htons(ntohs(_port)+1));
+
+    binded=binded && binded2;
+
   myinfo.sin_family=AF_INET;
   myinfo.sin_addr.s_addr=htonl(_myAddr);
   myinfo.sin_port=htons(_port);
@@ -82,6 +89,8 @@ Peer::Peer(int _myAddr,int serverAddr, int _port,int port2,bool &binded)
 bool is_number(string s)
 {
     int i=0;
+    if(s.length()==0)
+        return false;
     while(i<s.length())
     {
       if(!isdigit(s[i]))
@@ -376,9 +385,12 @@ int Peer::req(string requser,string filename,string views)
     Message request(1,(char *)(msg.c_str()),msg.length(),0,Request);
     int amountreq = -1;
     string marshalled_message=request.marshal(4+msg.length());
+    struct sockaddr_in cli=onlineuser_adds[requser];
+    cli.sin_port=htons(ntohs(cli.sin_port)+1);
     amountreq=UDPCSocket->writeToSocket(marshalled_message,sendsize);
     cout << "req\n";
-    string packets = UDPCSocket->readFromSocketWithTimeout(90);
+    UDPCSocket->changepeerip(cli);
+    string packets = UDPCSocket->readFromSocketWithTimeout(120);
     Message receivedpacks((char*)(packets.c_str()));
     string no_of_packs = receivedpacks.demarshal();
     if(no_of_packs != "Image not found\n")
@@ -399,7 +411,7 @@ int Peer::req(string requser,string filename,string views)
           flag = true;
           string packno;
           cout << "READ " << i << endl;
-          string temp = UDPCSocket->readFromSocketWithTimeout(2,flag);
+          string temp = UDPCSocket->readFromSocketWithTimeout(5,flag);
           if(flag)
             {
               imgm += temp;
@@ -407,7 +419,6 @@ int Peer::req(string requser,string filename,string views)
               Message PacketsNo((char*)(packno.c_str()));
               string marshalledpacksno = PacketsNo.marshal(packno.length());
               cout << "Packet Number " << packno << endl;
-              UDPCSocket->changepeerip(onlineuser_adds[requser]);
               int am = UDPCSocket->writeToSocket(marshalledpacksno ,sendsize);
               i++;
             }
@@ -425,7 +436,6 @@ int Peer::req(string requser,string filename,string views)
       pair<string,string> p1;
       p1 = make_pair(requser,filename);
       ReceivedPictures[p1] = views;
-      UDPCSocket->changepeerip(onlineuser_adds[requser]);
       return 1;
     }
     else
@@ -461,7 +471,7 @@ void Peer::InquiryReply(string msg,struct sockaddr_in client)
 }
 
 
-bool Peer::SendPicture(string recvs,struct sockaddr_in client)
+void Peer::SendPicture(string recvs,struct sockaddr_in client)
 {
     string uname = recvs.substr(0,recvs.find(' '));
     recvs.erase(0,recvs.find(' ')+1);
@@ -471,20 +481,20 @@ bool Peer::SendPicture(string recvs,struct sockaddr_in client)
       if(is_number(recvs))
         views = stoi(recvs);
       else
-        return 0;
+        return ;
       ifstream di;
       string filepath=uploadedpics[filename];
       di.open(filepath, ios::binary);
-
-      UDPSSocket->changepeerip(client);
-
       if(!di)
       {
         cout << "Image not Found " << endl;
         string nf="Image not found\n";
         Message notfound((char *)(nf.c_str()));
         string marshnf=notfound.marshal(nf.length());
-        int amountrep=UDPSSocket->writeToSocket(marshnf,sendsize);
+        socklock.lock();
+        UDPPSocket->changepeerip(client);
+        int amountrep=UDPPSocket->writeToSocket(marshnf,sendsize);
+        socklock.unlock();
       }
       else
       {
@@ -506,7 +516,10 @@ bool Peer::SendPicture(string recvs,struct sockaddr_in client)
         string packs=to_string(no_of_packets);
         Message packets((char *)(packs.c_str()));
         string marshalledpacks = packets.marshal(packs.length());
-        int amountr = UDPSSocket->writeToSocket(marshalledpacks,sendsize);
+        socklock.lock();
+        UDPPSocket->changepeerip(client);
+        int amountr = UDPPSocket->writeToSocket(marshalledpacks,sendsize);
+        socklock.unlock();
         vector<string> vec;
         vec = fragment(marshalled_image);
         int i = 0;
@@ -515,10 +528,11 @@ bool Peer::SendPicture(string recvs,struct sockaddr_in client)
         {
           cout << "loop " << i << endl;
           flag = true;
-          int amountrep = UDPSSocket->writeToSocket(vec[i],sendsize);
-
-          string approved = UDPSSocket->readFromSocketWithTimeout(2,flag);
-          UDPCSocket->changepeerip(client);
+          socklock.lock();
+          UDPPSocket->changepeerip(client);
+          int amountrep = UDPPSocket->writeToSocket(vec[i],sendsize);
+          string approved = UDPPSocket->readFromSocketWithTimeout(5,flag);
+          socklock.unlock();
           Message packsnumber((char *)(approved.c_str()));
           string ack = packsnumber.demarshal();
           cout << "ACKNOWLEDGED " << ack << endl;
@@ -526,8 +540,9 @@ bool Peer::SendPicture(string recvs,struct sockaddr_in client)
           {
             if((flag)&&(stoi(ack) == i))
               i++;
-            if(i > vec.size()-1)
-              break;
+            if(i > vec.size()-1){
+                break;
+            }
           }
         }
         di.close();
@@ -585,8 +600,7 @@ void Peer::rec()
 	{
     struct sockaddr_in client;
     bool flag = true;
-    cout << "rec\n";
-        string req=UDPSSocket->readFromSocketWithTimeout(10,client,flag);
+    string req=UDPSSocket->readFromSocketWithTimeout(10,client,flag);
     if(!flag)
       continue;
 		Message receivedmessage((char *)(req.c_str()));
@@ -623,7 +637,10 @@ void Peer::rec()
     else if(opcode==1)
     {
         cout << recvs << endl;
-        SendPicture(recvs,client);
+        class thread sending(&Peer::SendPicture, this,recvs,client);
+        cout << "Thread Created \n";
+        sending.detach();
+//        SendPicture(recvs,client);
     }
     else if(opcode==2)
     {
@@ -653,4 +670,5 @@ Peer::~Peer()
     UDPSDSocket=NULL;
     UDPSSocket=NULL;
     UDPCSocket=NULL;
+    UDPPSocket=NULL;
 }

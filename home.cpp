@@ -29,7 +29,7 @@ home::home(Peer &cspeer,QWidget *parent) :
     QString ops="0 - Inquire About Pictures at User.\n1 - Request Picture from User.\n2 - Change view count at certain user.\n3 - View current counter at certain user.\n4 - View Picture.\n";
     ui->opcodes->addItem(ops);
     cout << "Home\n";
-    QPixmap pix("/home/karim/Desktop/DIST/c.jpg");
+    QPixmap pix("c.jpg");
     ui->pic->setPixmap(pix.scaled(511,211));
 
     map <string,struct sockaddr_in> onlineuser_adds=cpeer.CheckOnlineFirst();
